@@ -1,0 +1,330 @@
+set-4 
+ 
+ Q1. (15 Marks)
+Write an Ansible playbook to install and start the Nginx web server on a managed node.
+Expected Output: Nginx installed, service running, 
+=
+code; 
+sudo apt update
+sudo apt install ansible -y
+ansible --version
+nano inventory.ini
+ini- [webservers]
+192.168.1.100 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_rsa
+nano nginx_setup.yml,touch nginx_setup.yml
+Paste this playbook:
+---
+- name: Install and start Nginx on Ubuntu
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Ensure Nginx is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+- Press Ctrl + O → Save
+- Press Enter → Confirm filename
+- Press Ctrl + X → Exit
+
+ansible-playbook -i inventory.ini nginx_setup.yml
+curl http://192.168.1.100
+systemctl status nginx
+
+
+Q2. (15 Marks)
+Run the Docker container for the image built in the Jenkins pipeline and display application output using logs.
+Expected Output: Container running and producing expected output.
+=
+Code:
+docker --version
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+docker images
+docker run -d --name myapp_container -p 8080:80 myapp:latest
+docker logs myapp_container
+docker ps
+curl http://localhost:8080
+
+Q3. 10 marks
+Run a manual Maven build in Jenkins (without using a pipeline).
+Build the project and show the successful build message in the Jenkins console output.
+Expected Output:
+Maven project builds successfully and shows “BUILD SUCCESS” in the Jenkins console.
+= 
+Code:
+sudo apt update
+sudo apt install openjdk-11-jdk maven -y
+sudo apt install jenkins -y
+sudo systemctl start jenkins
+sudo systemctl enable jenkins 
+http://localhost:8080
+ Step 2: Create a Maven Project in Jenkins
+- Go to Jenkins Dashboard
+- Click “New Item”
+- Enter a name (e.g., MyMavenProject)
+- Select “Maven Project”
+- Click OK
+
+⚙️ Step 3: Configure the Maven Project
+- In the project config:
+- Under Source Code Management, choose Git
+- Enter your repository URL (or leave blank for local build)
+- Under Build section:
+- Add build step: Invoke top-level Maven targets
+- In Goals, enter:
+clean package
+
+▶️ Step 4: Build the Project
+- Click “Build Now” on the left sidebar
+- Wait for the build to complete
+
+📟 Step 5: View Console Output
+- Click the build number (e.g., #1)
+- Click “Console Output”
+You should see:
+[INFO] BUILD SUCCESS
+
+✅ Expected Outcome
+- Jenkins runs Maven manually (no pipeline)
+- Console shows BUILD SUCCESS
+- .jar file generated in target/ directory of your project
+
+________________________________________ Set 5
+Q1. (15 Marks)
+Write an Ansible playbook to install and start the Apache2 web server on a managed node.
+Expected Output: Apache2 installed, service running, and accessible via browser 
+==
+Code:
+sudo apt update
+sudo apt install ansible -y
+ansible --version
+nano inventory.ini
+In ini=[webservers]
+192.168.1.100 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_rsa
+nano apache_setup.yml
+---
+- name: Install and start Apache2 on Ubuntu
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Apache2
+      apt:
+        name: apache2
+        state: present
+
+    - name: Ensure Apache2 is started and enabled
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+ansible-playbook -i inventory.ini apache_setup.yml
+systemctl status apache2
+in browser= http://192.168.1.100
+
+Q2. (15 Marks)
+Write a Dockerfile, build the image, and push it to Docker Hub from the command line.
+Expected Output: Image successfully pushed to Docker Hub.
+==
+Code:
+mkdir myapp
+cd myapp
+nano Dockerfile
+paste this in dockerfile:
+# Use official Python image
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy app code
+COPY app.py .
+
+# Run the app
+CMD ["python", "app.py"]
+
+nano app.py
+paste this;
+print("Hello from Docker!")
+docker build -t abhishek123/myapp:latest .
+docker login
+docker push abhishek123/myapp:latest
+docker pull abhishek123/myapp:latest
+
+Q3. (10 Marks)
+Create a simple Git repository, commit and push at least two versions of the same file showing version control in GitHub.
+Expected Output: Multiple commits visible in GitHub history.
+==
+Code:
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+mkdir my-git-demo
+cd my-git-demo
+git init
+echo "Version 1: Hello, Git!" > hello.txt
+git add hello.txt
+git commit -m "Initial commit: Added hello.txt with version 1"
+echo "Version 2: Hello, GitHub!" > hello.txt
+git add hello.txt
+git commit -m "Updated hello.txt to version 2"
+git remote add origin https://github.com/your-username/my-git-demo.git
+git branch -M main
+git push -u origin main
+
+Set 6
+
+Q1. (15 Marks)
+Write an Ansible playbook to install and start HAProxy on a managed node.
+The playbook should:
+•	Update the system package repository
+•	Install the haproxy package
+•	Enable and start the HAProxy service.
+==
+Code:
+🧰 Prerequisites
+Make sure:
+- Ansible is installed (sudo apt install ansible)
+- You have SSH access to the managed node
+- The managed node is listed in your inventory file (e.g., hosts)
+
+🪜 Step-by-Step Instructions
+✅ Step 1: Create a Working Directory
+mkdir haproxy-ansible
+cd haproxy-ansible
+
+
+
+📄 Step 2: Create the Inventory File
+nano hosts
+
+
+Add your managed node IP or hostname:ini
+[web]
+192.168.1.100 ansible_user=ubuntu
+
+
+Replace 192.168.1.100 with your actual managed node IP and ansible_user with the correct SSH user.
+
+
+📝 Step 3: Create the Playbook File
+nano haproxy_setup.yml
+
+
+Paste the following playbook:
+---
+- name: Install and start HAProxy on managed node
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Update system package repository
+      apt:
+        update_cache: yes
+
+    - name: Install HAProxy package
+      apt:
+        name: haproxy
+        state: present
+
+    - name: Enable and start HAProxy service
+      systemd:
+        name: haproxy
+        enabled: yes
+        state: started
+
+
+Press Ctrl+O to save and Ctrl+X to exit.
+
+🚀 Step 4: Run the Playbook
+ansible-playbook -i hosts haproxy_setup.yml
+
+
+
+🔍 Step 5: Verify HAProxy Status on Managed Node
+SSH into the node:
+ssh ubuntu@192.168.1.100
+
+
+Then check:
+systemctl status haproxy
+
+Q2. (15 Marks)
+Create a Dockerfile to containerize a simple Python application that prints the message "Hello from Docker and Python!".
+Build the Docker image and run the container to display the output.
+Expected Output:
+When the container runs, it should print:
+Hello from Docker and Python!
+== 
+Code:
+mkdir python-docker-demo
+cd python-docker-demo
+nano app.py
+Paste this code:
+print("Hello from Docker and Python!")
+nano Dockerfile
+Paste this content:
+# Use official Python base image
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy the Python script into the container
+COPY app.py .
+
+# Run the script
+CMD ["python", "app.py"]
+
+
+
+docker build -t python-docker-demo .
+docker run python-docker-demo
+
+
+Q3. (10 Marks)
+Create a new Git repository locally.
+Add a sample file named index.html, commit it with a message "Initial commit", and push it to your remote GitHub repository.
+•	Expected Output:
+The repository appears on GitHub with the committed index.html file and commit message visible.
+==
+Code:
+mkdir my-website
+cd my-website
+nano index.html
+Paste this sample content:
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My First GitHub Page</title>
+</head>
+<body>
+  
+git init
+git add index.html
+git commit -m "Initial commit"
+
+Create new repository in github
+
+git remote add origin https://github.com/your-username/my-website.git
+git branch -M main
+git push -u origin main
+
